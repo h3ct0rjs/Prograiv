@@ -7,7 +7,7 @@
 
 ### **Requirements**
 
-If you want to run this project you will need a Gnu/Linux enviroment, this was tested under Debian 9.0  and Ubuntu 16.10 both 32bits, open a terminal session and type:
+If you want to run this project you will need a Gnu/Linux enviroment, this was tested under Debian 9.0  and Ubuntu 16.10 both 32bits, open a terminal session and type to run manually:
 
 ```sh
 user@host /tmp$ git clone https://github.com/h3ct0rjs/ProgrammingIVassignments
@@ -16,6 +16,13 @@ user@host /Lab1$ sudo apt-get install ncurses-dev build-essential g++
 user@host /Lab1$  g++ -o solvequeen solver.cpp -lncurses
 user@host /Lab1$ ./solvequeen
 ```
+### **Automatic Run **
+
+```sh
+user@host /Lab1$ make 
+user@host /Lab1$ ./solvequeen
+```
+
 
 ### Supported Flags
 Actually I was playing with argv, and argc at low level code so I just think this could be a great chance to implement arguments as I neverused before.
