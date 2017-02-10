@@ -37,13 +37,13 @@ user@host /Lab1$ ./solvequeen --version
 * **-h** or **- -help** *
     : Show the information usage
 
-* **-nc** or **- -no-color** 
+* **-nc** or **- -not-color** 
     : Disable ncurses color,this black and white. 
  
 * **-t** or **- -theory**
     : Quick Explanation of how this computer programm works. 
  
-Licence
+License
 ---
 Mozilla Public License
 
