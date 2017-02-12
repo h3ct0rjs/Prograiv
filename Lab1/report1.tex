@@ -1,0 +1,106 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Original author:
+% Linux and Unix Users Group at Virginia Tech Wiki
+% (https://vtluug.org/wiki/Example_LaTeX_chem_lab_report)
+% Modified by: Hector F. Jimenez S, for my University Reports.
+% License:
+% CC BY-NC-SA 3.0 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%----------------------------------------
+%	PACKAGES AND DOCUMENT CONFIGURATIONS
+%---------------------------------------
+
+\documentclass[paper=a4, fontsize=12pt]{article} 		% A4 paper and 11pt font size
+\usepackage[T1]{fontenc} 								% Use 8-bit encoding that has 256 glyphs
+%\usepackage{fourier}		 							% Use the Adobe Utopia font for the document 
+\usepackage[spanish,english]{babel}						% Spanish Language, templates uses some sections in english.
+\selectlanguage{spanish}								% main language.
+\PassOptionsToPackage{spanish}{babel}
+%\renewcommand{\figurename}{Figura}						% Force rename of figure.
+%\renewcommand{\figurename}{Fig.}
+\usepackage[figurename=Fig.]{caption}
+\usepackage[utf8]{inputenc}								% tildes for spanish language.
+\usepackage{amsmath,amsfonts,amsthm} 					% Math packages.
+\usepackage{minted}										% For syntax highlighting.
+\usepackage{float}										% Image will be in the same place as you want.!!! x-/
+\usepackage{sectsty} 									% Allows customizing section commands
+\allsectionsfont{\centering \normalfont\scshape}	   	% Make all sections centered, the default font and small caps
+\usepackage{hyperref}
+\hypersetup{											%Setups the false color and borders.
+    colorlinks=false,
+    pdfborder={0 0 0},
+}
+\newcommand\fnurl[2]{%									% set a simple and quick footnote command and include url.
+\href{#2}{#1}\footnote{\url{#2}}%	
+}
+\usepackage{graphicx}									% Import easyly images.
+\graphicspath{ {./images/} }							% Where to look for the images.
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}				% Graphics Extension to be used
+\usepackage[notes,backend=biber]{biblatex-chicago}		% Bibliography and references.
+\bibliography{biblio}									% bibliography filename.
+\usepackage{fancyhdr} 									% Custom headers and footers
+\pagestyle{fancyplain} 									% Makes all pages in the document conform to the custom headers and footers
+\fancyhead{} 											% No page header
+\fancyfoot[L]{} 										% Empty left footer
+\fancyfoot[C]{} 										% Empty center footer
+\fancyfoot[R]{\thepage} 								% Page numbering for right footer
+\renewcommand{\headrulewidth}{0pt} 						% Remove header underlines
+\renewcommand{\footrulewidth}{0pt} 						% Remove footer underlines
+\setlength{\headheight}{13.6pt} 					    % Customize the height of the header
+\numberwithin{equation}{section}						% Number equations within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+%\numberwithin{figure}{section} 						% Number figures within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2)
+\numberwithin{table}{section} 							% Number tables within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\setlength\parindent{0pt} 								% Removes all indentation from paragraphs
+
+\usepackage{listings}									% http://ctan.org/pkg/listings
+\renewcommand{\lstlistingname}{Codigo}	
+
+%\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} 		% Create horizontal rule command with 1 argument of height
+%%%%%%%%%%%%%%%%%%%%
+%Title Section
+%%%%%%%%%%%%%%%%%%%%%
+\title{Problema de las 8 Reinas\\ 
+Programación IV\\Laboratorio: 1} 						% Title
+%\horrule{0.5pt} \\[0.4cm] 								% Thin top horizontal rule	Title rule
+%\huge Assignment Title \\ 								% The assignment title
+%\horrule{2pt} \\[0.5cm] 								% Thick bottom horizontal rule
+\author{												% Authors begin.
+Héctor F. \textsc{Jiménez Saldarriaga}\\
+\texttt{hfjimenez@utp.edu.co} \\
+\texttt{PGP KEY ID: 0xB05AD7B8}
+} 												       % End of  Author name
+\date{}    						                       % Date for the report, this will hide the \today.
+
+\begin{document}
+\maketitle                      			           % Insert the title, author and date
+\begin{center}
+\begin{tabular}{l r}								   % two column to
+Fecha de Entrega: & \textbf{14} Febrero,2016 \\			
+Profesor: & Ing. Ángel Augusto Agudelo Zapata
+\end{tabular}
+\end{center}
+%%%%%%%%%%%	
+% Let's start the document.
+%%%%%%%%%%%	
+\section{Restricciones de Objetivo}
+Analizar, diseñar e implementar el problema de las 8 reinas en el lenguaje deseado.
+\begin{itemize}
+  \item El tamaño del tablero debe ser variable.
+  \item Debe tomar tiempos para saber lo que se demora el algoritmo seleccionado.
+  \item Debe mostrar el resultado en pantalla
+  \item Debe generar una animación
+\end{itemize}
+$\\$
+%%%%%%%%%%%	
+% Theory Marc! 
+%%%%%%%%%%%	
+\section{Análisis de Problema}
+%#https://www.inf.ethz.ch/personal/wirth/Articles/StepwiseRefinement.pdf
+Para entender el problema a realizar se hizo la lectura del articulo provisto por el docente a cargo del autor \fnurl{Niklaus Wirth}{https://www.inf.ethz.ch/personal/wirth/Articles/StepwiseRefinement.pdf} en el articulo se plantea en como se debería de llevar acabo un diseño cuidadoso y modular cuando se intenta resolver un problema, el problema en contexto es el análisis del problema de las 8 reinas utilizando \emph{step refinement}, la idea es descomponer la solución planteada tanto como sea posible, estableciendo adecuadamente las $p$ posibles condiciones que acortan la solución. Para el problema de las 8 reinas \textbf{\textit{no existen}} soluciones analíticas y se deben explorar todas las posibles soluciones esto por obvias razones una solución por fuerza bruta seria costosa temporal y especialmente dado que tomaría $ \binom {64} {8}=\frac { 64! }{ 8!(64-8)! } =4,426,165,368$ combinaciones, por tal motivo es necesario reducir la búsqueda de soluciones a una que cumpla los requisitos y condiciones establecidas por nosotros; utilizando \textit{shortcuts} como lo menciona Niklaus tenemos en cuenta el movimiento ofensivo de la reina que puede atacar a $i$ elementos en su fila y columna correspondiente, así que solo debe de haber una y solo una reina por fila,columna $x,y$ del tablero, con esto podemos deducir que debemos permutar la $n$ cantidad de reinas que deseemos poner en el tablero, reduciendo esto a un número inferior de posibles 40,320 posibles ubicaciones, esto corresponde a $8!=40320$. Nuestra próxima condición será verificar los ataque en diagonales, que para para cada  permutación hallada, que representa un conjunto de posibles soluciones que satisfacen que ninguna reina se ataque a nivel horizontal y vertical; si hay almenos una solución dejaremos de buscar más sobre el conjunto de permutaciones. 
+
+\section{Solución del Problema}
+Teniendo en cuenta los hechos mencionados anteriormente asumiré que mi tablero máximo será un tablero de $n=10$ ya que debo acotar la solución de mi problema, además encontrar la cantidad de permutaciones en c++ no parece una tarea tan fácil con un n mayor a 10, como lo sería con el paquete \textbf{itertools} de \textbf{Python3}. Para resolver este problema he decidido utilizar \textbf{c++11}, para medir el tiempo utilizare la librería \fnurl{chrono}{http://www.cplusplus.com/reference/chrono/} y lo contrastare con el tiempo que me tire la utilidad \textbf{time} de Unix y presente en sistemas Gnu\/Linux, para realizar la animación he pensado utilizar ncurses(\textbf{sin confirmar por que tengo unos problemas para el render:\/}) en su ultima versión, dado que la idea es ver como se realiza el posicionamiento de las reinas en el tablero y no algo muy gráfico como sería hacerlo con allegro. 
+\section{Anexos}
+Los archivos correspondientes al proyecto de este laboratorio, junto con su readme y opciones soportadas pueden ser descargados del \fnurl{repositorio }{https://github.com/h3ct0rjs/ProgrammingIVassignments/tree/master/Lab1}
+\end{document}
+\end{document}
