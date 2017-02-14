@@ -1,3 +1,3 @@
 all:
-	g++ -std=c++11 -lncurses solver.cpp -o solvequeen
-	./solvequeen 
+	g++ -std=c++11 solver.cpp -o solvequeen -lncurses 
+	./solvequeen 8

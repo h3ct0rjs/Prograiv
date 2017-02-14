@@ -5,17 +5,16 @@ using namespace std;
 #define VERSION "0.3"
 #define AUTHOR "    Hector Jimenez S."
 #define EMAIL  "    hfjimenez@utp.edu.co"
-												//http://stackoverflow.com/questions/16223610/list-of-vectors
-list<vector<int>> listofvector;					//we want to store a list of vectors, of the following form :
-												//[[permutation1],[permutation2],[permutation2],[permutation3]]
-list<vector<int>> Solutions;					//we want to store a list of vectors, of the following form :
+#define QUEEN_CHAR '*'
+
 void theory();
 void printhelp();
 void nqueens();
 void version();
+
+
 void printhelp(){
-	
-		cout<<"Usage: solvequeen [OPTION...] [NQUEENS] \n\n"<<endl
+	cout<<"Usage: solvequeen [OPTION...] [NQUEENS] \n\n"<<endl
     <<"\ntheory : Show information about libraries and resource to solve this problem"<<endl
 		<<"help : Print this contextual menu."	   <<endl
 		<<"version: Show programm version"  <<endl
@@ -27,7 +26,6 @@ void version(){
 		<<"\t| "<<AUTHOR<<"\t\t|"<<endl
 		<<"\t|"<<EMAIL<<"\t|"<<endl
 		<<"\t:::::::::::::::::::::::::::::::::"<<endl;};
-
 void theory(){
 	cout<<"Representamos las n reinas mediante un vector[1-n], teniendo en cuenta que cada índice del"<<endl
 	<<"vector representa una fila y el valor una columna. Así cada reina estaría en la posición (i, v[i])"<<endl
@@ -72,14 +70,58 @@ void nqueens(int n){									//this will create the permutations needed
  	 }while (next_permutation(v.begin(),v.end()) );		//3!:6,4!:24,5!:120,6!:720,7!:5040,8!:40320,10!:3628800
 }
 
+void board(WINDOW *win, int starty, int startx, int lines, int cols, 
+	   int tile_width, int tile_height)
+{	int endy, endx, i, j;
+	
+	endy = starty + lines * tile_height;
+	endx = startx + cols  * tile_width;
+	
+	for(j = starty; j <= endy; j += tile_height)
+		for(i = startx; i <= endx; ++i)
+			mvwaddch(win, j, i, ACS_HLINE);
+	for(i = startx; i <= endx; i += tile_width)
+		for(j = starty; j <= endy; ++j)
+			mvwaddch(win, j, i, ACS_VLINE);
+	mvwaddch(win, starty, startx, ACS_ULCORNER);
+	mvwaddch(win, endy, startx, ACS_LLCORNER);
+	mvwaddch(win, starty, endx, ACS_URCORNER);
+	mvwaddch(win, 	endy, endx, ACS_LRCORNER);
+	for(j = starty + tile_height; j <= endy - tile_height; j += tile_height)
+	{	mvwaddch(win, j, startx, ACS_LTEE);
+		mvwaddch(win, j, endx, ACS_RTEE);	
+		for(i = startx + tile_width; i <= endx - tile_width; i += tile_width)
+			mvwaddch(win, j, i, ACS_PLUS);
+	}
+	for(i = startx + tile_width; i <= endx - tile_width; i += tile_width)
+	{	mvwaddch(win, starty, i, ACS_TTEE);
+		mvwaddch(win, endy, i, ACS_BTEE);
+	}
+	wrefresh(win);
+}
+
+int print(vector <int> positions, int num_queens)
+{	int count;
+	int y = 2, x = 2, w = 4, h = 2;
+	static int solution = 1;
+	board(stdscr, y, x, num_queens, num_queens, w, h);
+	for(count = 1; count <= num_queens; ++count)
+	{	int tempy = y + (count - 1) * h + h / 2;
+		int tempx = x + (positions[count] - 1) * w + w / 2;
+		mvaddch(tempy, tempx, QUEEN_CHAR);
+	}
+	refresh();
+	mvprintw(LINES - 2, 0, "Intentos Parciales");
+	if(getch() == KEY_F(1))
+	{	endwin();
+		}
+	clear();
+}
 
 int main(int argc, char *argv[]){
-	chrono::time_point<chrono::system_clock> start, end;
-  	start = chrono::system_clock::now();
+	initscr();
 	int n=0;											//by default it takes n queen as 0.
 	bool color=true;									//by default color is enable
-//I was wanting to learn about argc, and argv, because there are many c/c++ programms in unix that support this feature.
-//arguments
 	while (argc > 1){
 		if (argv[1][0] == '-' && argv[1][1] == '-'){
 
@@ -134,18 +176,18 @@ int main(int argc, char *argv[]){
 
 		else n = atoi(argv[1]);	//number of nqueens to permute
 		++argv;
-		--argc;
-	}
-
-	/*if(n>12){
+		--argc;}
+	if(n>12){
 		cout<<"Sorry, unfortunately until now I'm unable to process more than 12 queens\n n>12 takes a lot of time to precompute the n permutations"<<endl;
 		cout<<"I will handle this decision for you, with n=8 "<<endl;
-		n=8;
-	}*/
+		n=10;
+	}
+	chrono::time_point<chrono::system_clock> start, end;
+  	start = chrono::system_clock::now();
 	nqueens(n);				//permutations
+	endwin();
 	end = chrono::system_clock::now();
 	chrono::duration<double> elapsed_seconds = end - start;
 	cout << "time: " << elapsed_seconds.count() << "s\n";
 	return 0;
-
 	}
