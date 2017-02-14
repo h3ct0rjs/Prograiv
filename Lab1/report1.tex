@@ -11,11 +11,11 @@
 %---------------------------------------
 
 \documentclass[paper=a4, fontsize=12pt]{article} 		% A4 paper and 11pt font size
-\usepackage[T1]{fontenc} 								% Use 8-bit encoding that has 256 glyphs
+\usepackage[T2A,T1]{fontenc} 								% Use 8-bit encoding that has 256 glyphs
 %\usepackage{fourier}		 							% Use the Adobe Utopia font for the document 
 \usepackage[spanish,english]{babel}						% Spanish Language, templates uses some sections in english.
 \selectlanguage{spanish}								% main language.
-\PassOptionsToPackage{spanish}{babel}
+\PassOptionsToPackage{spanish,russian }{babel}
 %\renewcommand{\figurename}{Figura}						% Force rename of figure.
 %\renewcommand{\figurename}{Fig.}
 \usepackage[figurename=Fig.]{caption}
@@ -53,7 +53,8 @@
 \setlength\parindent{0pt} 								% Removes all indentation from paragraphs
 
 \usepackage{listings}									% http://ctan.org/pkg/listings
-\renewcommand{\lstlistingname}{Codigo}	
+\renewcommand{\lstlistingname}{Código}	
+\usepackage[]{algorithm2e}
 
 %\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} 		% Create horizontal rule command with 1 argument of height
 %%%%%%%%%%%%%%%%%%%%
@@ -99,8 +100,84 @@ $\\$
 Para entender el problema a realizar se hizo la lectura del articulo provisto por el docente a cargo del autor \fnurl{Niklaus Wirth}{https://www.inf.ethz.ch/personal/wirth/Articles/StepwiseRefinement.pdf} en el articulo se plantea en como se debería de llevar acabo un diseño cuidadoso y modular cuando se intenta resolver un problema, el problema en contexto es el análisis del problema de las 8 reinas utilizando \emph{step refinement}, la idea es descomponer la solución planteada tanto como sea posible, estableciendo adecuadamente las $p$ posibles condiciones que acortan la solución. Para el problema de las 8 reinas \textbf{\textit{no existen}} soluciones analíticas y se deben explorar todas las posibles soluciones esto por obvias razones una solución por fuerza bruta seria costosa temporal y especialmente dado que tomaría $ \binom {64} {8}=\frac { 64! }{ 8!(64-8)! } =4,426,165,368$ combinaciones, por tal motivo es necesario reducir la búsqueda de soluciones a una que cumpla los requisitos y condiciones establecidas por nosotros; utilizando \textit{shortcuts} como lo menciona Niklaus tenemos en cuenta el movimiento ofensivo de la reina que puede atacar a $i$ elementos en su fila y columna correspondiente, así que solo debe de haber una y solo una reina por fila,columna $x,y$ del tablero, con esto podemos deducir que debemos permutar la $n$ cantidad de reinas que deseemos poner en el tablero, reduciendo esto a un número inferior de posibles 40,320 posibles ubicaciones, esto corresponde a $8!=40320$. Nuestra próxima condición será verificar los ataque en diagonales, que para para cada  permutación hallada, que representa un conjunto de posibles soluciones que satisfacen que ninguna reina se ataque a nivel horizontal y vertical; si hay almenos una solución dejaremos de buscar más sobre el conjunto de permutaciones. 
 
 \section{Solución del Problema}
-Teniendo en cuenta los hechos mencionados anteriormente asumiré que mi tablero máximo será un tablero de $n=10$ ya que debo acotar la solución de mi problema, además encontrar la cantidad de permutaciones en c++ no parece una tarea tan fácil con un n mayor a 10, como lo sería con el paquete \textbf{itertools} de \textbf{Python3}. Para resolver este problema he decidido utilizar \textbf{c++11}, para medir el tiempo utilizare la librería \fnurl{chrono}{http://www.cplusplus.com/reference/chrono/} y lo contrastare con el tiempo que me tire la utilidad \textbf{time} de Unix y presente en sistemas Gnu\/Linux, para realizar la animación he pensado utilizar ncurses(\textbf{sin confirmar por que tengo unos problemas para el render:\/}) en su ultima versión, dado que la idea es ver como se realiza el posicionamiento de las reinas en el tablero y no algo muy gráfico como sería hacerlo con allegro. 
+Teniendo en cuenta los hechos mencionados anteriormente asumiré que mi tablero máximo será un tablero de $n=10$ ya que debo acotar la solución de mi problema, además encontrar la cantidad de permutaciones en c++ no parece una tarea tan fácil con un de $n$ mayor a 10 ya que toma algo de tiempo, como lo sería con el paquete \textbf{itertools} de \textbf{Python3} como se realiza la \fnurl{prueba}{https://github.com/h3ct0rjs/ProgrammingIVassignments/blob/master/Lab1/nreinas.py} . 
+Para resolver el problema Representamos las n reinas mediante un vector$[1-n]$, teniendo en cuenta que cada índice del vector representa una fila y el valor de una columna. Así cada reina estaría en la posición $(i, v[i])$ para i = 1-8, seguidamente se realizaría una permutaciÓn usando el método \textit{next\_permutation}, \fnurl{c++ stl}{http://www.cplusplus.com/reference/algorithm/next_permutation/} del vector anterior para obtener todas las posibles combinaciones de reinas en el tablero de ajedrez, esto nos asegurara que no existan  mas de una reina por fila y columna, dejandono como ultimo paso la  validación de nuestra condición $p$ para verificar si las reinas ofensivamente tiene alguna posibilidad entre si en una diagonal ascendente o descendente, tome como ejemplo un par de reinas $Q1:\big(i,j\big)$ ,$Q2:\big(k,l\big)$ estas estarán en la misma diagonal \textit{si y solo si} se comprueban las siguientes condiciones :
+	 	$$i-j == k-l || i+j == k+l || j-l == i-k|| j-l == k-i$$
+Si nuestro vento no retorna verdad en las condiciones anteriores hemos encontrado una solución, Por lo tanto procederemos a ir graficando las no soluciones en nuestro board hasta llegar al vector solución.El cumplimiento de esta función se puede observar en el fragmento de código \ref{third:valida},\ref{third:nqueens} implementado en c\+\+.
+Se decidio usar \textbf{c++11} ya que era lo que conocía, para medir el tiempo utilizare la librería \fnurl{chrono}{http://www.cplusplus.com/reference/chrono/} y se puede contrastar con el tiempo que me tire la utilidad \textbf{time} de Unix y presente en sistemas Gnu \/Linux, para realizar \fnurl{SFML}{https://www.sfml-dev.org/tutorials/2.0/start-linux.php}, y me he basado en el tablero realizado por el ruso.
+
+\begin{listing}[H]
+	\begin{minted}{cpp}  
+bool check(vector <int>vect){
+for(auto const&r1: vect){
+ for(int j=r1+1;j<vect.size();j++){
+ if( (r1-vect[r1] == j-vect[j]) || (r1+vect[r1] == j+vect[j]) || \
+ (vect[r1]-vect[j] == r1-j) || (vect[r1]-vect[j] == j-r1) ) {
+				return 1;		//si hay un elemento en la diagonal, pum devuelve un 1. 
+			}			
+		}
+	}
+	return 0;					//Si termino, el vector recibido es winner.
+}
+\end{minted}
+\caption{Shortcut p, verificacion de la diagonal ascendente, descendente}.
+    \label{third:valida}
+\end{listing}
+
+\begin{listing}[H]
+	\begin{minted}{cpp}  
+void nqueens(int n){	//this will create the permutations needed
+	int n2=n;
+	vector<int> v(n2);
+	iota(begin(v),end(v),0); 	//fill the vector fast, linear time
+	int sol=0;			//count the number of solutions founded
+	do {				
+ 		if(check(v)){
+        	Graphsml(v);	//show interactions
+        } 
+		else {
+			cout<<"Combinación Ganadora!"<<endl;
+			sol++;
+			for(auto const &x: v){
+	    		cout <<x+1 <<" ";
+	    	}
+	    	cout <<endl;
+		}cout<<endl;
+		if(sol>=1) break;
+ 	 }while (next_permutation(v.begin(),v.end()) );		
+     //3!:6,4!:24,5!:120,6!:720,7!:5040,8!:40320,10!:3628800
+     }
+\end{minted}
+\caption{Generacion de permutaciones}.
+    \label{third:nqueens}
+\end{listing}
+Después de hacer pruebas con el código, se observo que cuando se le tiraba un n \textbf{mayor a} 12 el programa tardaba entre 4 y 5 minutos, lo cual me da una sensación de que realizar las validaciones de la diagonal usando cada permutacion gastaba demasiado tiempo, pues lo que se realizaba era generar la permutacion y verificar si era una posible solución. 
+\newline
+\begin{algorithm}[H]
+ initializar variable\;
+ \While{no exista al menos una solucion}{
+  generapermutacion()\;
+  \eIf{nohay ofensiva entre reinas}{
+   Terminar y mostrar final\;
+   }{
+   Graficar en tablero las permutaciones erroneas\;
+  }
+ }
+ \caption{Pseudocodigo}
+\end{algorithm}
+
+Ahora que pasaría si nosotros almacenáramos primero todas las permutaciones en una lista de vectores, y recorriéramos la lista de manera aleatoria con una buena distribución 
+probabilisticamente podríamos obtener mejores resultados, pero eso sera para una próxima. 
+
+Con la idea también de jugar un poco con esto de argc, y argv he añadido las siguientes opciones :
+\begin{enumerate}
+\item -v or - -version * : Current software version
+\item -h or - -help * : Show the information usage
+\item -t or - -theory : Quick Explanation of how this computer programm works.
+\item -nc or - -not-color : Disable ncurses color,this black and white.
+\end{enumerate}
+
+
 \section{Anexos}
 Los archivos correspondientes al proyecto de este laboratorio, junto con su readme y opciones soportadas pueden ser descargados del \fnurl{repositorio }{https://github.com/h3ct0rjs/ProgrammingIVassignments/tree/master/Lab1}
-\end{document}
 \end{document}
