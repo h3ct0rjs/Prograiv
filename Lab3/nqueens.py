@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 #-*- coding:utf-8-*-
 #angel's solution
 #Add animations using objects implementing the graphics.py library.
@@ -5,28 +6,52 @@
 #To install graphics.py pip3 install --user http://bit.ly/csc161graphics
 
 from graphics import  *	#Caveat! Remember "wildcard" (*) imports are not good form 
-
+import math as m
 N = 8
 
+
+
 class Board:
-    def __init__(self):
-        pass
+	def __init__(self):
+		pass 
 
-    def drawer(self):
-        win = GraphWin("N Queens", 500, 500)
-        c = Circle(Point(500,500), 10)
-        c.draw(win)
-        aLine = Line(Point(250,250), Point(300,250))
-        aLine.draw(win)
-        win.getMouse()        
-        win.close()
-        
-    def Drawqueen(self):
-        pass
-                                   
-    
+	def maker(self,corner, width, height):  
+		corner2 = corner.clone()	#Because we need to setup the new object and a new reference
+		corner2.move(width, height)
+		return Rectangle(corner, corner2)
+	
+	def bdraw(self):
+	#""All the operations related to graphics.py"""
+		win = GraphWin('Nqueens Solver',300,300)	
+		win.setBackground('white')
+		message = Text(Point(win.getWidth()/2, 18), 'ChessBoard')
+		message.setTextColor('red')
+		message.setStyle('italic')
+		message.setSize(12)
+		message.draw(win)
+		warea=Polygon([Point(30,30),Point(270,30),Point(270,270),Point(30,270)])
+		warea.draw(win)
+		sqsize=m.floor(win.getWidth()/N)	#square size.
+		startp=Point(30,30)					#we need a start.
+		for i in range(N):
+			rect=self.maker(startp,sqsize,sqsize)
+			print(rect)						#debug
+			rect.setFill('black')
+			rect.draw(win)
+			rect.setFill('red')				#Test serie pattern
+			win.getMouse()					#Pause until you click the window.
+
+		win.getMouse()						#Pause until you click the window.
+		win.close()                   		#Destroy the object win.
+
+	def animations(self,datalist):
+	    for i in range(N):
+	        q.move(posx, posy)
+	        time.sleep(.05)
+
+
+
 class Queen:
-
 	def __init__(self,col,neighbor):
 		self.row = 1
 		self.col = col
@@ -69,7 +94,7 @@ class Queen:
 	def printt(self):
 		if self.neighbor is not None:
 			self.neighbor.printt()
-		print (self.row, self.col)
+		print(self.row, self.col)
 
 
 if __name__ == '__main__':
@@ -78,4 +103,8 @@ if __name__ == '__main__':
 		q = Queen(i + 1, q)
 		if not q.find_soluction():
 			print('Sin solucion')
+	
 	q.printt()	
+
+	boardcito=Board()
+	boardcito.bdraw()
