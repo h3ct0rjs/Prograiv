@@ -19,7 +19,7 @@ class Board:
 		corner2 = corner.clone()	#Because we need to setup the new object and a new reference
 		corner2.move(width, height)
 		return Rectangle(corner, corner2)
-	
+
 	def bdraw(self):
 	#""All the operations related to graphics.py"""
 		win = GraphWin('Nqueens Solver',300,300)	
@@ -32,15 +32,14 @@ class Board:
 		warea=Polygon([Point(30,30),Point(270,30),Point(270,270),Point(30,270)])
 		warea.draw(win)
 		sqsize=m.floor(win.getWidth()/N)	#square size.
-		startp=Point(30,30)					#we need a start.
-		for i in range(N):
+		startp=Point(30,30)
+		print(sqsize)					#we need a start.
+		for i in range(7):
 			rect=self.maker(startp,sqsize,sqsize)
 			print(rect)						#debug
-			rect.setFill('black')
 			rect.draw(win)
-			rect.setFill('red')				#Test serie pattern
 			win.getMouse()					#Pause until you click the window.
-
+			startp=Point(startp.getX()+sqsize,startp.getY()+sqsize)
 		win.getMouse()						#Pause until you click the window.
 		win.close()                   		#Destroy the object win.
 
