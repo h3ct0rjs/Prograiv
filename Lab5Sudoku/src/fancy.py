@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #Project Details: Part of Sudoku Generator,Solver.
 #Lab5, Computer Programming IV
-#File Details: Contains Colors, And Core functions
+#File Details: Contains Colors, And Other Fancy Things
 #feedback:hfjimenez@utp.edu.co
 #    License Details:
 #    Copyright (C) 2017  Hector F. Jimenez S.
@@ -32,13 +32,14 @@ green = '\x1b[32m'   # green text
 blue = '\x1b[34m'    # blue text
 cyan = '\x1b[36m'    # cyan text
 white = '\x1b[37m'   # white text (use reset unless it's only temporary)
-
+yellow = '\x1b[33m'
 warning = "{}[!]{}".format(red, reset)
-info = "{}[*]{}".format(green, reset)
+info = "{}[*]{}".format(blue, reset)
+check = "{}[]{}".format(green, reset)
+
 __version__="0.2"               
 __author__='Hector F. Jimenez S.'
 __email__='hfjimenez@utp.edu.co'
-
 
 def signalHandler(signal, frame):
     warning("Ctrl-C Para cerrar !")
@@ -50,13 +51,9 @@ def menu():
     {}Select level of difficulty[1-4] :{}
     {}Easy
     {}Medium
-    {}Insane
     {}Hardcore
+    {}Insane
     """.format(bold,reset,info,info,info,info))
-
-    
-    
-
 
 # Random Banner
 def banner():
