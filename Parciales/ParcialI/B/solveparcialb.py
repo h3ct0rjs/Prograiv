@@ -21,13 +21,11 @@ class Scheduller:
 
     def addtask(self,task, priority=0):
     """Register a new task
-
     Add a new task or update the priority of an existing task
     """ 
         if task in self.entry_finder:
             removetask(task) count = next(self.counter)
         self.entry = [priority, count, task]
-
         self.entry_finder[task] = entry 
         heappush(self.tasklist,self.entry)
     
