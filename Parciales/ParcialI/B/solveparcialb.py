@@ -48,4 +48,4 @@ class Scheduller:
      raise KeyError('pop from an empty priority queue')
 
     def start(self):
-        r=[x.execute() for x un self.taslist]
+        r=[x.execute() for x in self.taslist]
