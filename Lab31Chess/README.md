@@ -29,7 +29,6 @@ if you're using ipython you can get all the explanation, because I use the docst
 
  ```python 
 In [1]: %run start.py
-In [2]: 
 ```
 
 License
