@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env pythongit ad
 # -*- coding: utf-8 -*-
 # File Details:models.py, store all the states of the game
 # ParcialII, Computer Programming IV
@@ -13,64 +13,143 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
-
-class Token(object):
-    """Class for the piece representation in the board"""
-
-    def __init__(self, color):
-        self.color = color
-        self.form = 'default.png'
-
-    def __str__(self):
-        return str(self.color)
-
-
-class TokenKing(Token):
-    """class King Piece"""
-
-    def __init__(self, arg):
-        super(Token, self).__init__()
-        self.king = True
-        self.form = 'king.png'
-
-
 class BoardStorage(object):
-    """Represent the states of the current Checkers board"""
-
+    """
+    Represent the states of Checkers board
+    """
     def __init__(self):
-        """Create the  datastructure to represent the real grid"""
-        self.logm = {}
-        self.idmvmt = 0
-        self.grid = [['0'] * 8 for _ in range(8)]
-        self.grid[0] = ['0' if i % 2 == 0 else '1' for i in range(8)]
-        self.grid[1] = grid[0][::-1]
-        self.grid[2] = self.grid[0]
-        self.grid[6] = ['0' if i % 2 == 0 else '2' for i in range(8)]
-        self.grid[5] = grid[6][::-1]
-        self.grid[7] = grid[6][::-1]
-        for row in range(8):
-            for col in range(8):
-                if self.grid[row][col] == 1:
-                    self.grid[row][col] = Token('Black')
-                elif self.grid[row][col] == 2:
-                    self.grid[row][col] = Token('White')
+        """
+        Default initializator to create all the machines
+        """
+        self.array = []     
+        self.size = 8
+        self.machinePieces = 0
+        self.playerPieces = 0
+        for i in range (self.size):
+            self.array.append([])
+            for j in range (self.size):
+                self.array[i].append(None)
+        self.showgrid()#debug
 
     def showgrid(self):
-        """Show your ds representation in the console.Debugging options """
+        """
+        Show your DS representation in the console.debug
+        """
+        print('::Board State::')
         for row in range(8):
             for col in range(8):
-                print("{}|".format(self.grid[row][col]), end=' ')
+                print("{}|".format(self.array[row][col]), end=' ')
             print("\n{}".format(' '.join(12 * '*')))
 
-    def updategrid(self, grid):
-        self.grid = grid
+    def addPiece(self,owner,type,x,y):
+        piece = Piece()
+        piece.setValues(owner,type)
+        if self.array[int(x)][int(y)] == None:
+            if piece.getOwner()== "M" and (piece.getType() == 1 or piece.getType() == 0):
+                self.array[int(x)][int(y)] = piece
+                self.machinePieces+=1
+                return True
+            elif piece.getOwner()== "Player" and (piece.getType() == 1 or piece.getType() == 0):
+                self.array[int(x)][int(y)] = piece   
+                self.playerPieces+=1
+                return True
+        else:
+            return False
 
-    def LogMovements(self, movement, player):
-        """Logger for player movements"""
-        self.logm[self.idmvmt] = str(player.color) + ' ' + movement
-        self.idmvmt += 1
 
-    def getLogMovements(self):
-        for j in range(len(self.logm)):
-            print("{} : {}".format(j, self.logm[j]))
+    def countMachinePieces(self):
+        return self.machinePieces
+
+    
+    def countPlayerPieces(self):
+        return self.playerPieces
+
+    
+    def pieceAt(self,x,y):
+        """
+        Esta la ficha en la posicion x,y, retornemos True or False.
+        """    
+        fichita = self.array[int(x)][int(y)]
+        if fichita != None:
+            return True
+        else:
+            return False
+
+    def removePiece(self,x,y): 
+        """
+        returns the piece from the array given at position x and y 
+        and sets that array position to none
+        number of pieces - 1 
+        """
+        if self.pieceAt(x,y) :
+            tmp = self.getPieceAt(x,y)
+            self.array[int(x)][int(y)] = None
+            if tmp.getOwner() == "M":
+                self.machinePieces-=1
+            elif tmp.getOwner() == "Player":
+                self.playerPieces-=1
+            return tmp
+        
+    def updatePieceType(self,type,x,y):
+        tmpF = self.removePiece(x, y)
+        if tmpF:
+            self.addPiece(tmpF.getOwner(), type, x, y)
+            return True
+        else:
+            return False
+        
+    def getPieceAt(self,x,y):
+        """
+        Returns the piece at array X,Y if the piece exits there
+        """    
+        if self.pieceAt(x, y):
+            return self.array[int(x)][int(y)]
+        
+    # returns size
+    def getSize(self):
+        return self.size
+    
+    
+    def movePiece(self,x,y,x1,y1):
+        """ 
+        move piece takes current piece position at X, Y and moves it to X1, Y1
+        removes Piece at X and Y in the array and adds it back at position X1, Y1
+        """
+        tmp = self.removePiece(x, y)
+        if tmp:
+            self.addPiece(tmp.getOwner(), tmp.getType(), x1, y1)
+            return True
+        else:
+            return False
+
+class Piece(object):
+    """
+    Creates a Piece Object
+    type, and owner. With the owner I identified the color.
+    For this Game I've done the development mostly with machine vs player. 
+    player vs player will be the last
+    """
+    def __init__(self):
+        self.type = 0
+        self.owner = ""
+
+    def setValues(self,owner,type):
+        self.type = type
+        self.owner = owner
+    
+    def getType(self):
+        return self.type
+    
+    def getOwner(self):
+        """
+        Who is the owner of the piece?
+        return owner value.
+        """
+        return self.owner
+
+    def getInfo(self):
+        """
+        Returns the owner and type of piece
+        """
+        print("Owner = {}".format(self.owner))
+        print("Type = {}".format(self.type))

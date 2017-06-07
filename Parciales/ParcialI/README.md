@@ -5,5 +5,4 @@ In this folder you'll find my solutions, as we know in the exam We were against 
 
 
 Each folder tries to accomplish this using pyrhon3 ,I've used ipython the most cool interpreter 
-
-To
+to me.

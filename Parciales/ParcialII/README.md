@@ -5,19 +5,29 @@ Your task is Design and implement a checkers game taking in count the following 
  - Observator
  - Iterator
  - Strategic 
- - Facade
- - MVC
+ - Facade   
+ - MVC       
  
 You're able to use : C++, Java, Python as graphical options you are able to use : Python{Qt,Graphics.py},C++{Qt,Allegro},Java{Fx}.
 
 ### Installation
 
-our checkers game requires [python3.6](https://www.python.org/) to run.
+our checkers game requires [python3.6](https://www.python.org/) to run, PyQt4.
 you will need to install the dependencies and start the game.
+
+#### Automatic Process
+Use make to start the game.
+
+```sh
+$ make up
+```
+
+#### Manual Process
+Use the command line to start the game.
 
 ```sh
 $ cd Checkers
-$ python3.6 start.py
+$ python start.py
 ```
 or 
 ```sh
@@ -25,78 +35,96 @@ $ cd Checkers
 $ chmod +x start.py && ./start.py
 ```
 
-This version is not tested for Windows enviroments, but it should work! normally.
-
+This version is not tested for Windows enviroments, but it should work! normally, if you accomplish 
+with the required dependecies.
 
 ### Checkers US Rules
 
 In order to develop our small checkers game, we  explore many different rulesets  [[1]](https://www.thespruce.com/play-checkers-using-standard-rules-409287),[[2]](https://en.wikipedia.org/wiki/Draughts)
-after a long discution we agree to use the US version
-- Each player has 12 tokens 
-- tokens move in one direction(toward opponent)
-- tokens can only move diagonally 
-- tokens that reach the end of the board becomes in king tokens
-- king tokens can move in any direction 
-- win by jumping over all opponent tokens 
+after a long discution I agree to use the US version:
+- Each player has 12 pieces 
+- pieces move in one direction(toward opponent)
+- pieces can only move diagonally 
+- pieces that reach the end of the board becomes in king pieces
+- king pieces can move in any direction 
+- win by jumping over all opponent pieces
 
 move : diagonally 1 empty space 
 jump : diagonally 2 spaces 
 
-
-### Architectural Pattern: mvc
+### Architectural Pattern: MVC
 
 #### Models
-Store the state of the board movements, and current list of sugestion. 
+Store the state of the board movements, and all the Storage representations, perhaps the 
+piece class is used to create a model for each piece.
 The datastructure use to store the states is a list of list,we were reading all 
 the posible data-structure to represent a checkers board  like they are :
 - Piece List 
 - Array2d based
 - bit board 
 
-because we're not worried about speed we can use the most simple ds, the array, this could be 
+because we're not worried about speed we can use the most simple ds, a list of list, this could be 
 achive using the following snippet in python3.6
 
 ```python 
-        grid = [[0]*8 for _ in range(8)]
-        grid[0] = [0 if i%2 == 0 else 1 for i in range(8)]
-        grid[1] = grid[0][::-1]
-        grid[6] = [0 if i%2 == 0 else 2 for i in range(8)]
-        grid[7] = grid[6][::-1]
+        array = []     
+        size = 8
+        machinePieces = 0
+        playerPieces = 0
+        for i in range (size):
+            array.append([])
+            for j in range (size):
+                array[i].append(None)
 ```
-The previous code give us a representation where the number 0 is an empty space, 1 represent tokens for black pieces and 2 for white pieces:
+The previous code give us how the Board Class creates the initialization where each 
+position will be set to None, then we can use another iteration to start set the pieces 
+over the board.
 
 ```sh
------------------------
-0| 1| 0| 1| 0| 1| 0| 1| 
------------------------
-1| 0| 1| 0| 1| 0| 1| 0| 
------------------------
-0| 0| 0| 0| 0| 0| 0| 0| 
------------------------
-0| 0| 0| 0| 0| 0| 0| 0| 
------------------------
-0| 0| 0| 0| 0| 0| 0| 0| 
------------------------
-0| 0| 0| 0| 0| 0| 0| 0| 
------------------------
-0| 2| 0| 2| 0| 2| 0| 2| 
------------------------
-2| 0| 2| 0| 2| 0| 2| 0| 
------------------------
+Board State
+-----------------------------------------------
+None| None| None| None| None| None| None| None| 
+-----------------------------------------------
+None| None| None| None| None| None| None| None| 
+-----------------------------------------------
+None| None| None| None| None| None| None| None| 
+-----------------------------------------------
+None| None| None| None| None| None| None| None| 
+-----------------------------------------------
+None| None| None| None| None| None| None| None| 
+-----------------------------------------------
+None| None| None| None| None| None| None| None| 
+-----------------------------------------------
+None| None| None| None| None| None| None| None| 
+-----------------------------------------------
+None| None| None| None| None| None| None| None| 
+-----------------------------------------------
 ```
-#### Activity Log for movements
 
-We want to show your game, so after know how to store the data, every body knows that is pretty important in every type of board game keep an activity log, we use a dictionary where key is the id of the movement, and the asociate value is the movement, we lock the key pair to avoid changes.  
 
-```python 
+#### Views
+This file generates all the graphical aspect for the game, it's mainly use to create 
+the board visualization and show the board changes, we use PyQt4 and the available widgets
+to set the board images.  I use multiple images to represent the current state. 
 
-    Board.getLogMovements()
-  Id | Movements 
-    1. A1 to B3
-    2. B5 to C4 
-    3. ...so on!
+PyQt4 has many base class that can be use in order to create the Graphical User Inteface, for this game **I just implement the game for the option Player vs Machine**  and with four options :
 
-```
+    -  Quit
+    -  Resign
+    -  Start New Game
+    -  Go Back 
+
+Each option makes use of a button, that is personalized, and handle by signals when the button is clicked.
+
+To create the board I create a  `QTableWidget(8,8)` and the for each cell I insert an ImgWidget a custom class create to put the image in each cell using drawPixmap method.
+
+
+![Graphical User Interface](http://i.imgur.com/B07liTd.png)
+
+#### Controller
+Creates the board and control all the operation of the main application. This class makes all the movement and interaction with the views and the models posible, determine the valid moves for a piece and help the player and the machine with the implementation of the minimax and beta-alfa prunning algorith in order to get the maximum benefit for each one. 
+
+
 
 ### Development
 
@@ -104,21 +132,26 @@ Want to contribute? Great!
 Open an issue and create a pull request for your fixes and new features
 
 * Hector F. Jimenez S. , hfjimenez@utp.edu.co 
-* Daniel Quiroz , dcquiroz@utp.edu.co
+* Daniel Quiroz , dcquiroz@utp.edu.co(His Java Version is not for the final term project if not for the previous checkers game.)
 
-
-### Todos
-
+### ToDos
+-  Add Game Modes 
  - ~~Learn to play checkers.~~
  - ~~Create the sketch up of the game, get a list of objects and his interations between them~~
- - Graphical mode !
+ - ~~Graphical mode !~~
  - Add Night Mode.
- - Think in m2m battles.
+ - Think in m2m battles.[Pretty Slow with maximum depth equal to 5]
 
 
 ### Useful Resources
 
-- https://realpython.com/blog/python/the-model-view-controller-mvc-paradigm-summarized-with-legos/
+- MVC Explanation,https://realpython.com/blog/python/the-model-view-controller-mvc-paradigm-summarized-with-legos/
+- PyQT Testing,https://www.youtube.com/watch?v=2fGPKPmQF-E&list=PLR2mMc_XnsCuuhN_wdnDxm9IUGCpGaTHk
+- PyQt Tutorial, Lecture http://zetcode.com/gui/pyqt4/layoutmanagement/
+- PyQt by Example, http://www.programcreek.com/python/example/55345/PyQt4.QtGui.QFont
+- Trevor Paint, Minimax https://www.youtube.com/watch?v=fInYh90YMJU
+- MIT Open CourseWare, Minimax https://www.youtube.com/watch?v=STjW3eH0Cik 
+
 
 License
 ----
